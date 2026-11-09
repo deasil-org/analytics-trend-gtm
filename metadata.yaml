@@ -1,3 +1,5 @@
 homepage: "https://analyticstrend.com"
 documentation: "https://analyticstrend.com/docs/guide/install-gtm"
-versions: []
+versions:
+  - sha: afd1ee3247c948455cd2e7df7cc97b89ecb42e95
+    changeNotes: First version.
