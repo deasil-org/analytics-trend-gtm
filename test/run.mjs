@@ -145,7 +145,7 @@ check("may inject exactly the pinned script, and touch only its own globals", ()
   assert.deepEqual(urls, [SCRIPT_URL]);
   const globals = permissions.find((p) => p.instance.key.publicId === "access_globals");
   const keys = globals.instance.param.find((p) => p.key === "keys").value.listItem.map((i) => i.mapValue[0].string);
-  assert.deepEqual(keys.sort(), ["analyticstrend.track", "analyticstrendConfig", "analyticstrendQueue", "analyticstrendStartedKey"]);
+  assert.deepEqual(keys.sort(), ["analyticsTrendConfig", "analyticsTrendQueue", "analyticstrend.track", "analyticstrendStartedKey"]);
   const logging = permissions.find((p) => p.instance.key.publicId === "logging");
   assert.equal(logging.instance.param[0].value.string, "debug");
 });

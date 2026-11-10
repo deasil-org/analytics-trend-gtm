@@ -202,7 +202,7 @@ function sendEvent() {
     else callInWindow('analyticstrend.track', name);
   } else {
     // Not loaded yet: AnalyticsTrend sends what is queued when it starts.
-    createQueue('analyticstrendQueue')(props ? [name, props] : [name]);
+    createQueue('analyticsTrendQueue')(props ? [name, props] : [name]);
   }
   data.gtmOnSuccess();
 }
@@ -219,7 +219,7 @@ function countPageViews() {
   const config = { writeKey: key };
   if (data.outboundLinks) config.outboundLinks = 'true';
   if (data.fileDownloads) config.fileDownloads = 'true';
-  setInWindow('analyticstrendConfig', config, true);
+  setInWindow('analyticsTrendConfig', config, true);
   injectScript(SCRIPT_URL, data.gtmOnSuccess, data.gtmOnFailure, SCRIPT_URL);
 }
 
@@ -277,7 +277,7 @@ ___WEB_PERMISSIONS___
                   { "type": 1, "string": "execute" }
                 ],
                 "mapValue": [
-                  { "type": 1, "string": "analyticstrendConfig" },
+                  { "type": 1, "string": "analyticsTrendConfig" },
                   { "type": 8, "boolean": false },
                   { "type": 8, "boolean": true },
                   { "type": 8, "boolean": false }
@@ -292,7 +292,7 @@ ___WEB_PERMISSIONS___
                   { "type": 1, "string": "execute" }
                 ],
                 "mapValue": [
-                  { "type": 1, "string": "analyticstrendQueue" },
+                  { "type": 1, "string": "analyticsTrendQueue" },
                   { "type": 8, "boolean": true },
                   { "type": 8, "boolean": true },
                   { "type": 8, "boolean": true }
@@ -370,7 +370,7 @@ scenarios:
       onSuccess();
     });
     runCode({action: 'pageViews', writeKey: ' wk_0123456789abcdef0123456789abcdef ', outboundLinks: false, fileDownloads: false});
-    assertApi('setInWindow').wasCalledWith('analyticstrendConfig', {writeKey: 'wk_0123456789abcdef0123456789abcdef'}, true);
+    assertApi('setInWindow').wasCalledWith('analyticsTrendConfig', {writeKey: 'wk_0123456789abcdef0123456789abcdef'}, true);
     assertThat(injected).isEqualTo('https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.8.0/dist/script.js');
     assertApi('gtmOnSuccess').wasCalled();
 - name: link options reach the config as strings
@@ -379,7 +379,7 @@ scenarios:
       onSuccess();
     });
     runCode({action: 'pageViews', writeKey: 'wk_0123456789abcdef0123456789abcdef', outboundLinks: true, fileDownloads: true});
-    assertApi('setInWindow').wasCalledWith('analyticstrendConfig', {writeKey: 'wk_0123456789abcdef0123456789abcdef', outboundLinks: 'true', fileDownloads: 'true'}, true);
+    assertApi('setInWindow').wasCalledWith('analyticsTrendConfig', {writeKey: 'wk_0123456789abcdef0123456789abcdef', outboundLinks: 'true', fileDownloads: 'true'}, true);
 - name: a script that fails to load fails the tag
   code: |-
     mock('injectScript', function(url, onSuccess, onFailure) {
@@ -410,7 +410,7 @@ scenarios:
       };
     });
     runCode({action: 'event', eventName: 'signup', eventProperties: [{name: 'plan', value: 'pro'}]});
-    assertThat(queueName).isEqualTo('analyticstrendQueue');
+    assertThat(queueName).isEqualTo('analyticsTrendQueue');
     assertThat(pushed).isEqualTo(['signup', {plan: 'pro'}]);
     assertApi('injectScript').wasNotCalled();
     assertApi('gtmOnSuccess').wasCalled();
