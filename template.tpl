@@ -167,7 +167,7 @@ const makeString = require('makeString');
 const makeTableMap = require('makeTableMap');
 const logToConsole = require('logToConsole');
 
-const SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.8.0/dist/script.js';
+const SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.9.0/dist/script.js';
 const HEX = '0123456789abcdef';
 const SPACE = ' \t\n\r';
 
@@ -196,10 +196,10 @@ function sendEvent() {
     return;
   }
   const props = data.eventProperties && data.eventProperties.length ? makeTableMap(data.eventProperties, 'name', 'value') : null;
-  if (copyFromWindow('analyticstrendStartedKey')) {
+  if (copyFromWindow('analyticsTrendStartedKey')) {
     // Already loaded: send it now.
-    if (props) callInWindow('analyticstrend.track', name, props);
-    else callInWindow('analyticstrend.track', name);
+    if (props) callInWindow('analyticsTrend.track', name, props);
+    else callInWindow('analyticsTrend.track', name);
   } else {
     // Not loaded yet: AnalyticsTrend sends what is queued when it starts.
     createQueue('analyticsTrendQueue')(props ? [name, props] : [name]);
@@ -244,7 +244,7 @@ ___WEB_PERMISSIONS___
             "listItem": [
               {
                 "type": 1,
-                "string": "https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.8.0/dist/script.js"
+                "string": "https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.9.0/dist/script.js"
               }
             ]
           }
@@ -307,7 +307,7 @@ ___WEB_PERMISSIONS___
                   { "type": 1, "string": "execute" }
                 ],
                 "mapValue": [
-                  { "type": 1, "string": "analyticstrendStartedKey" },
+                  { "type": 1, "string": "analyticsTrendStartedKey" },
                   { "type": 8, "boolean": true },
                   { "type": 8, "boolean": false },
                   { "type": 8, "boolean": false }
@@ -322,7 +322,7 @@ ___WEB_PERMISSIONS___
                   { "type": 1, "string": "execute" }
                 ],
                 "mapValue": [
-                  { "type": 1, "string": "analyticstrend.track" },
+                  { "type": 1, "string": "analyticsTrend.track" },
                   { "type": 8, "boolean": false },
                   { "type": 8, "boolean": false },
                   { "type": 8, "boolean": true }
@@ -371,7 +371,7 @@ scenarios:
     });
     runCode({action: 'pageViews', writeKey: ' wk_0123456789abcdef0123456789abcdef ', outboundLinks: false, fileDownloads: false});
     assertApi('setInWindow').wasCalledWith('analyticsTrendConfig', {writeKey: 'wk_0123456789abcdef0123456789abcdef'}, true);
-    assertThat(injected).isEqualTo('https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.8.0/dist/script.js');
+    assertThat(injected).isEqualTo('https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.9.0/dist/script.js');
     assertApi('gtmOnSuccess').wasCalled();
 - name: link options reach the config as strings
   code: |-
@@ -427,11 +427,11 @@ scenarios:
 - name: an event once AnalyticsTrend has loaded is sent at once
   code: |-
     mock('copyFromWindow', function(name) {
-      if (name === 'analyticstrendStartedKey') return 'wk_0123456789abcdef0123456789abcdef';
+      if (name === 'analyticsTrendStartedKey') return 'wk_0123456789abcdef0123456789abcdef';
       return undefined;
     });
     runCode({action: 'event', eventName: 'signup', eventProperties: [{name: 'plan', value: 'pro'}]});
-    assertApi('callInWindow').wasCalledWith('analyticstrend.track', 'signup', {plan: 'pro'});
+    assertApi('callInWindow').wasCalledWith('analyticsTrend.track', 'signup', {plan: 'pro'});
     assertApi('createQueue').wasNotCalled();
     assertApi('gtmOnSuccess').wasCalled();
 - name: an event without a name fails the tag

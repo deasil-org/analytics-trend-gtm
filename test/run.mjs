@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 const ROOT = path.join(import.meta.dirname, "..");
-const SCRIPT_URL = "https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.8.0/dist/script.js";
+const SCRIPT_URL = "https://cdn.jsdelivr.net/npm/@analyticstrend/web@0.9.0/dist/script.js";
 
 export function sections(text) {
   const out = {};
@@ -145,7 +145,7 @@ check("may inject exactly the pinned script, and touch only its own globals", ()
   assert.deepEqual(urls, [SCRIPT_URL]);
   const globals = permissions.find((p) => p.instance.key.publicId === "access_globals");
   const keys = globals.instance.param.find((p) => p.key === "keys").value.listItem.map((i) => i.mapValue[0].string);
-  assert.deepEqual(keys.sort(), ["analyticsTrendConfig", "analyticsTrendQueue", "analyticstrend.track", "analyticstrendStartedKey"]);
+  assert.deepEqual(keys.sort(), ["analyticsTrend.track", "analyticsTrendConfig", "analyticsTrendQueue", "analyticsTrendStartedKey"]);
   const logging = permissions.find((p) => p.instance.key.publicId === "logging");
   assert.equal(logging.instance.param[0].value.string, "debug");
 });
