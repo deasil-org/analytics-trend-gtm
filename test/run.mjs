@@ -207,10 +207,15 @@ check("metadata names the homepage, the guide and a version per release", () => 
   assert.match(meta, /^versions:/m);
 });
 
-check("is Apache 2.0, held by Deasil", () => {
-  const license = readFileSync(path.join(ROOT, "LICENSE"), "utf8");
-  assert.match(license, /^Copyright 2026 Deasil$/m);
-  assert.match(license, /Apache License\s+Version 2\.0, January 2004/);
+// The gallery refuses a LICENSE that isn't Apache 2.0's own text: the one
+// change it takes is the owner, filled in on the appendix's copyright line.
+check("is Apache 2.0's own text, held by Deasil", () => {
+  const license = readFileSync(path.join(ROOT, "LICENSE"), "utf8").replace(/\r\n/g, "\n");
+  const lines = license.split("\n");
+  assert.match(lines[0], /^\s*$/, "nothing above the title, as in Apache's text");
+  assert.match(lines[1], /^\s+Apache License$/);
+  assert.deepEqual(license.match(/^ *Copyright \d.*$/gm), ["   Copyright 2026 Deasil"], "one copyright line, the appendix's");
+  assert.doesNotMatch(license, /\[yyyy\]|\[name of copyright owner\]/);
   assert.doesNotMatch(license, /Deasil Inc/);
 });
 
