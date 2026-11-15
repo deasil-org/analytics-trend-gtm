@@ -1,6 +1,8 @@
 homepage: "https://analyticstrend.com"
 documentation: "https://analyticstrend.com/docs/guide/install-gtm"
 versions:
+  - sha: 627a6d509574c3dce7efe9b9b1fbbc1696a204dd
+    changeNotes: Fixes Count page views, which Tag Manager stopped with a permission error.
   - sha: facf30442a2f6a767c1fa5ed7ba8bfe224cff77d
     changeNotes: Loads @analyticstrend/web 0.9.0, whose client is window.analyticsTrend.
   - sha: 775dbdb8d17df73c1a353b2e4589dd5f952f2044
