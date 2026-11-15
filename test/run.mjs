@@ -39,8 +39,30 @@ function makeTableMap(rows, key, value) {
   return Object.fromEntries(rows.map((row) => [row[key], row[value]]));
 }
 
+// What each sandbox API asks access_globals for, as Tag Manager checks it:
+// setInWindow and createQueue read and write the global, copyFromWindow reads
+// it, callInWindow executes it.
+const GLOBAL_ACCESS = {
+  setInWindow: ["read", "write"],
+  createQueue: ["read", "write"],
+  copyFromWindow: ["read"],
+  callInWindow: ["execute"],
+};
+
+/** The template's access_globals grants: key → { read, write, execute }. */
+export function globalGrants(permissionsJson) {
+  const globals = JSON.parse(permissionsJson).find((p) => p.instance.key.publicId === "access_globals");
+  const items = globals?.instance.param.find((p) => p.key === "keys").value.listItem ?? [];
+  return Object.fromEntries(
+    items.map((item) => {
+      const value = (name) => item.mapValue[item.mapKey.findIndex((k) => k.string === name)];
+      return [value("key").string, { read: value("read").boolean, write: value("write").boolean, execute: value("execute").boolean }];
+    }),
+  );
+}
+
 /** Runs one scenario: its code may call mock, runCode, assertApi, assertThat and fail. */
-function runScenario(templateCode, scenario) {
+function runScenario(templateCode, scenario, grants) {
   const calls = {};
   const mocks = {};
   const record = (name, args) => (calls[name] ??= []).push(args);
@@ -55,6 +77,12 @@ function runScenario(templateCode, scenario) {
     createQueue: () => () => {},
   };
   const api = (name) => (...args) => {
+    const needs = GLOBAL_ACCESS[name];
+    if (needs) {
+      const grant = grants[args[0]];
+      const missing = needs.filter((mode) => !grant?.[mode]);
+      if (missing.length) throw new Error(`Prohibited ${needs.join("")} on global variable: ${args[0]}`);
+    }
     record(name, args);
     return (mocks[name] ?? real[name])(...args);
   };
@@ -170,7 +198,7 @@ check("has the plan's scenarios", () => {
     assert.ok(list.some((s) => s.name === name), `no scenario "${name}"`);
   }
 });
-for (const scenario of list) check(`scenario: ${scenario.name}`, () => runScenario(parts.SANDBOXED_JS_FOR_WEB_TEMPLATE, scenario));
+for (const scenario of list) check(`scenario: ${scenario.name}`, () => runScenario(parts.SANDBOXED_JS_FOR_WEB_TEMPLATE, scenario, globalGrants(parts.WEB_PERMISSIONS)));
 
 check("metadata names the homepage, the guide and a version per release", () => {
   const meta = readFileSync(path.join(ROOT, "metadata.yaml"), "utf8");
