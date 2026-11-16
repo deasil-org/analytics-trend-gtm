@@ -1,0 +1,15 @@
+{
+    "name": "analytics-trend-gtm",
+    "private": true,
+    "description": "The AnalyticsTrend tag template for Google Tag Manager. The gallery reads template.tpl, metadata.yaml, LICENSE and README.md; this file only runs the checks.",
+    "type": "module",
+    "scripts": {
+        "test": "node test/run.mjs",
+        "fmt": "oxfmt",
+        "fmt:check": "oxfmt --check",
+        "lint": "node scripts/no-prettier.mjs"
+    },
+    "devDependencies": {
+        "oxfmt": "^0.78.0"
+    }
+}
